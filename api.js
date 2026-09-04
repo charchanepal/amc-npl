@@ -3,7 +3,7 @@ const API_URL = (function() {
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
         return 'https://amc-npl.onrender.com/api';
     }
-    return 'https://amc-np-backend.onrender.com/api';
+    return 'https://amc-npl.onrender.com/api';
 })();
 
 function getToken() {
