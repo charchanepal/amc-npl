@@ -69,7 +69,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     setTimeout(() => window.location.href = 'dashboard.html', 1500);
 });
 
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
+document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('regName').value.trim();
     const email = document.getElementById('regEmail').value.trim();
