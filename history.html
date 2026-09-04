@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service History - AMC NP</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-tools"></i>
+            <h2>AMC<span>NP</span></h2>
+            <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="devices.html"><i class="fas fa-laptop"></i> My Devices</a></li>
+            <li><a href="booking.html"><i class="fas fa-calendar-check"></i> Service Requests</a></li>
+            <li class="active"><a href="history.html"><i class="fas fa-history"></i> Service History</a></li>
+            <li><a href="bills.html"><i class="fas fa-file-invoice"></i> Bills</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li id="adminLink" style="display:none"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin Panel</a></li>
+            <li id="techLink" style="display:none"><a href="technician.html"><i class="fas fa-hard-hat"></i> Technician Panel</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <h1 style="font-size:20px;color:#2c3e50"><i class="fas fa-history" style="color:#667eea"></i> Service History</h1>
+            <div class="user-info" id="profileBtn" style="margin-left:auto">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">User</div>
+                    <div class="user-role" id="userRole">Customer</div>
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <div class="search-bar" style="background:white;padding:12px 16px;border-radius:10px;display:flex;align-items:center;gap:12px;margin-bottom:20px;box-shadow:0 2px 4px rgba(0,0,0,0.04)">
+                <i class="fas fa-search" style="color:#999"></i>
+                <input type="text" id="searchHistory" placeholder="Search by device..." oninput="renderHistory()" style="flex:2;padding:8px 12px;border:1.5px solid #e1e5eb;border-radius:6px;font-size:14px;background:#f9fafb">
+                <select id="filterYear" onchange="renderHistory()" style="padding:8px 12px;border:1.5px solid #e1e5eb;border-radius:6px;font-size:14px;background:#f9fafb">
+                    <option value="">All Years</option>
+                </select>
+            </div>
+
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="history.js"></script>
+</body>
+</html>

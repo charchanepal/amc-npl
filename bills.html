@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bills & Payments - AMC NP</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-tools"></i>
+            <h2>AMC<span>NP</span></h2>
+            <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="devices.html"><i class="fas fa-laptop"></i> My Devices</a></li>
+            <li><a href="booking.html"><i class="fas fa-calendar-check"></i> Service Requests</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> Service History</a></li>
+            <li class="active"><a href="bills.html"><i class="fas fa-file-invoice"></i> Bills</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li id="adminLink" style="display:none"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin Panel</a></li>
+            <li id="techLink" style="display:none"><a href="technician.html"><i class="fas fa-hard-hat"></i> Technician Panel</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <h1 style="font-size:20px;color:#2c3e50"><i class="fas fa-file-invoice-dollar" style="color:#667eea"></i> Bills & Payments</h1>
+            <div class="user-info" id="profileBtn" style="margin-left:auto">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">User</div>
+                    <div class="user-role" id="userRole">Customer</div>
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <div class="bill-stats">
+                <div class="bill-card">
+                    <div class="bill-icon green"><i class="fas fa-check-circle"></i></div>
+                    <div>
+                        <div class="bill-value" id="paidCount">0</div>
+                        <div class="bill-label">Paid Bills</div>
+                    </div>
+                </div>
+                <div class="bill-card">
+                    <div class="bill-icon orange"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <div class="bill-value" id="pendingCount">0</div>
+                        <div class="bill-label">Pending Bills</div>
+                    </div>
+                </div>
+                <div class="bill-card">
+                    <div class="bill-icon blue"><i class="fas fa-wallet"></i></div>
+                    <div>
+                        <div class="bill-value" id="totalPaid">₹0</div>
+                        <div class="bill-label">Total Paid</div>
+                    </div>
+                </div>
+                <div class="bill-card">
+                    <div class="bill-icon red"><i class="fas fa-exclamation-circle"></i></div>
+                    <div>
+                        <div class="bill-value" id="totalDue">₹0</div>
+                        <div class="bill-label">Total Due</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-bar" style="background:white;padding:12px 16px;border-radius:10px;display:flex;align-items:center;gap:12px;margin-bottom:20px;box-shadow:0 2px 4px rgba(0,0,0,0.04)">
+                <i class="fas fa-search" style="color:#999"></i>
+                <input type="text" id="searchBill" placeholder="Search bills..." oninput="renderBills()" style="flex:2;padding:8px 12px;border:1.5px solid #e1e5eb;border-radius:6px;font-size:14px;background:#f9fafb">
+                <select id="filterStatus" onchange="renderBills()" style="padding:8px 12px;border:1.5px solid #e1e5eb;border-radius:6px;font-size:14px;background:#f9fafb">
+                    <option value="">All Status</option>
+                    <option value="paid">Paid</option>
+                    <option value="pending">Pending</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+            </div>
+
+            <div id="billsList"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="payModal">
+        <div class="modal-box pay-modal">
+            <h3><i class="fas fa-credit-card"></i> Pay Bill</h3>
+            <div id="payBillDetails"></div>
+            <div class="payment-methods">
+                <h4>Select Payment Method</h4>
+                <label class="pay-option">
+                    <input type="radio" name="payMethod" value="esewa" checked>
+                    <span><i class="fas fa-mobile-alt"></i> eSewa</span>
+                </label>
+                <label class="pay-option">
+                    <input type="radio" name="payMethod" value="khalti">
+                    <span><i class="fas fa-mobile-alt"></i> Khalti</span>
+                </label>
+                <label class="pay-option">
+                    <input type="radio" name="payMethod" value="card">
+                    <span><i class="fas fa-credit-card"></i> Card</span>
+                </label>
+                <label class="pay-option">
+                    <input type="radio" name="payMethod" value="cash">
+                    <span><i class="fas fa-money-bill"></i> Cash on Service</span>
+                </label>
+            </div>
+            <div style="margin-top:20px;display:flex;gap:10px">
+                <button onclick="processPayment()" class="btn" style="flex:1"><i class="fas fa-check"></i> Pay Now</button>
+                <button onclick="closePayModal()" class="btn-outline" style="flex:1">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="bills.js"></script>
+</body>
+</html>

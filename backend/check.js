@@ -1,0 +1,13 @@
+const Database = require('better-sqlite3');
+const path = require('path');
+const db = new Database(path.join(__dirname, 'amc.db'));
+console.log('=== DEVICES ===');
+const devices = db.prepare('SELECT id, user_id, type, brand, model FROM devices').all();
+devices.forEach(d => console.log(`ID=${d.id} user=${d.user_id} ${d.type} ${d.brand} ${d.model}`));
+console.log('\n=== SERVICES ===');
+const services = db.prepare('SELECT id, user_id, device_id, status FROM services').all();
+services.forEach(s => console.log(`ID=${s.id} user=${s.user_id} device=${s.device_id} status=${s.status}`));
+console.log('\n=== USERS ===');
+const users = db.prepare('SELECT id, name, email, role FROM users').all();
+users.forEach(u => console.log(`ID=${u.id} ${u.name} (${u.email}) - ${u.role}`));
+db.close();

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Devices - AMC NP</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-tools"></i>
+            <h2>AMC<span>NP</span></h2>
+            <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="active"><a href="devices.html"><i class="fas fa-laptop"></i> My Devices</a></li>
+            <li><a href="booking.html"><i class="fas fa-calendar-check"></i> Service Requests</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> Service History</a></li>
+            <li><a href="bills.html"><i class="fas fa-file-invoice"></i> Bills</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li id="adminLink" style="display:none"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin Panel</a></li>
+            <li id="techLink" style="display:none"><a href="technician.html"><i class="fas fa-hard-hat"></i> Technician Panel</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <h1 style="font-size:20px;color:#2c3e50"><i class="fas fa-laptop" style="color:#667eea"></i> My Devices</h1>
+            <div class="user-info" id="profileBtn" style="margin-left:auto">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">User</div>
+                    <div class="user-role" id="userRole">Customer</div>
+                </div>
+            </div>
+        </header>
+        <div class="content" style="padding:30px">
+
+        <div class="table-toolbar">
+            <div class="toolbar-left">
+                <input type="text" id="searchInput" placeholder="Search devices..." oninput="render()" class="search-input">
+                <select id="filterType" onchange="render()" class="filter-select">
+                    <option value="">All Types</option>
+                    <option value="TV">TV</option>
+                    <option value="AC">AC</option>
+                    <option value="FRIDGE">Fridge</option>
+                    <option value="WASHING">Washing Machine</option>
+                </select>
+            </div>
+            <div class="toolbar-right">
+                <button class="btn-outline"><i class="fas fa-file-excel"></i> Export Excel</button>
+                <button class="btn-outline"><i class="fas fa-columns"></i> Columns</button>
+                <button onclick="openAddModal()" class="btn"><i class="fas fa-plus"></i> Add Device</button>
+            </div>
+        </div>
+
+        <div class="table-box">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>S.N</th>
+                        <th>Customer</th>
+                        <th>Brand / Model</th>
+                        <th>Serial No</th>
+                        <th>Mobile</th>
+                        <th>Address</th>
+                        <th>End Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="deviceTable"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <div class="modal" id="addTypeModal">
+        <div class="modal-box" style="max-width:400px">
+            <h3>Add New Device Type</h3>
+            <label>Type Name</label>
+            <input type="text" id="newTypeInput" placeholder="e.g. Water Purifier" maxlength="30" style="text-transform:uppercase">
+            <div style="display:flex;gap:10px;margin-top:20px">
+                <button onclick="saveNewType()" class="btn" style="flex:1"><i class="fas fa-plus"></i> Add Type</button>
+                <button onclick="closeAddTypeModal()" class="btn-outline" style="flex:1">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="deviceModal">
+        <div class="modal-box">
+            <h3 id="modalTitle">Add New Device</h3>
+            <form onsubmit="saveDevice(event)">
+                <input type="hidden" id="deviceId">
+                <label>Device Type</label>
+                <div style="display:flex;gap:8px">
+                    <select id="dType" required style="flex:1">
+                        <option value="TV">TV</option>
+                        <option value="AC">AC</option>
+                        <option value="FRIDGE">Fridge</option>
+                        <option value="WASHING">Washing Machine</option>
+                        <option value="MICROWAVE">Microwave</option>
+                        <option value="LAPTOP">Laptop</option>
+                        <option value="HEATER">Heater</option>
+                        <option value="FAN">Fan</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                    <button type="button" onclick="openAddTypeModal()" class="btn-outline" style="white-space:nowrap;padding:10px 12px" title="Add new device type"><i class="fas fa-plus"></i> Type</button>
+                </div>
+                <input type="hidden" id="customTypeName">
+                <div id="customTypeDisplay" style="display:none;margin-top:6px;padding:8px 12px;background:#d4edda;color:#155724;border-radius:6px;font-size:13px">
+                    New type: <b id="customTypeLabel"></b>
+                    <button type="button" onclick="removeCustomType()" style="background:none;border:none;color:#721c24;float:right;cursor:pointer"><i class="fas fa-times"></i></button>
+                </div>
+                <label>Brand</label>
+                <input type="text" id="dBrand" placeholder="Samsung, LG..." required>
+                <label>Model</label>
+                <input type="text" id="dModel" placeholder="Model name" required>
+                <label>Serial Number</label>
+                <input type="text" id="dSerial" placeholder="Serial number" required>
+                <label>Mobile</label>
+                <input type="tel" id="dMobile" placeholder="98xxxxxxxx" required>
+                <label>Address</label>
+                <input type="text" id="dAddress" placeholder="Customer address" required>
+                <label>Purchase Date</label>
+                <input type="date" id="dPurchase" required>
+                <label>Warranty (months)</label>
+                <input type="number" id="dWarranty" min="0" value="12" required>
+                <div style="display:flex;gap:10px;margin-top:15px">
+                    <button type="submit" class="btn" style="flex:1">Save</button>
+                    <button type="button" onclick="closeModal()" class="btn-outline" style="flex:1">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="renewModal">
+        <div class="modal-box" style="max-width:500px">
+            <h3><i class="fas fa-sync-alt" style="color:#11998e"></i> Renew Service Contract</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:15px">Extend your service warranty for this device.</p>
+            <div id="renewDeviceInfo" style="background:#f0f9f7;padding:15px;border-radius:8px;margin-bottom:15px"></div>
+            <form onsubmit="submitRenewal(event)">
+                <input type="hidden" id="renewDeviceId">
+                <label>Plan Type *</label>
+                <select id="renewPlan" required onchange="updateRenewCost()">
+                    <option value="">-- Select Plan --</option>
+                    <option value="Basic AMC" data-months="6" data-cost="800">Basic AMC (6 months) - ₹800</option>
+                    <option value="Standard AMC" data-months="12" data-cost="1500">Standard AMC (1 year) - ₹1500</option>
+                    <option value="Premium AMC" data-months="24" data-cost="2800">Premium AMC (2 years) - ₹2800</option>
+                    <option value="Extended Warranty" data-months="36" data-cost="4000">Extended Warranty (3 years) - ₹4000</option>
+                    <option value="Custom">Custom Duration</option>
+                </select>
+                <div id="customDuration" style="display:none">
+                    <label>Duration (months)</label>
+                    <input type="number" id="renewMonths" min="1" max="60" value="12">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="renewAmount" min="0" value="1500">
+                </div>
+                <label>Notes (optional)</label>
+                <textarea id="renewNotes" rows="2" placeholder="Any additional notes..."></textarea>
+                <div style="display:flex;gap:10px;margin-top:20px">
+                    <button type="submit" class="btn" style="flex:1;background:#11998e"><i class="fas fa-sync-alt"></i> Renew Now</button>
+                    <button type="button" onclick="closeRenewModal()" class="btn-outline" style="flex:1">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="renewalsModal">
+        <div class="modal-box" style="max-width:600px">
+            <h3><i class="fas fa-history" style="color:#11998e"></i> Renewal History</h3>
+            <div id="renewalsDeviceInfo" style="background:#f0f9f7;padding:12px;border-radius:8px;margin-bottom:15px"></div>
+            <div id="renewalsList"></div>
+            <div style="margin-top:20px">
+                <button onclick="closeRenewalsModal()" class="btn-outline" style="width:100%">Close</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="devices.js"></script>
+</body>
+</html>

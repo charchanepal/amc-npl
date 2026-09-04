@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - AMC NP</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-tools"></i>
+            <h2>AMC<span>NP</span></h2>
+            <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="devices.html"><i class="fas fa-laptop"></i> My Devices</a></li>
+            <li><a href="booking.html"><i class="fas fa-calendar-check"></i> Service Requests</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> Service History</a></li>
+            <li><a href="bills.html"><i class="fas fa-file-invoice"></i> Bills</a></li>
+            <li class="active"><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li id="adminLink" style="display:none"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin Panel</a></li>
+            <li id="techLink" style="display:none"><a href="technician.html"><i class="fas fa-hard-hat"></i> Technician Panel</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <h1 style="font-size:20px;color:#2c3e50"><i class="fas fa-cog" style="color:#667eea"></i> Settings</h1>
+            <div class="user-info" id="profileBtn" style="margin-left:auto">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">User</div>
+                    <div class="user-role" id="userRole">Customer</div>
+                </div>
+            </div>
+        </header>
+        <div class="content">
+            <div class="settings-layout">
+            <aside class="settings-nav">
+                <a href="#profile" class="set-link active" data-tab="profile"><i class="fas fa-user"></i> Profile</a>
+                <a href="#password" class="set-link" data-tab="password"><i class="fas fa-lock"></i> Password</a>
+                <a href="#notifications" class="set-link" data-tab="notifications"><i class="fas fa-bell"></i> Notifications</a>
+                <a href="#danger" class="set-link" data-tab="danger" style="color:#e74c3c"><i class="fas fa-exclamation-triangle"></i> Danger Zone</a>
+            </aside>
+
+            <div class="settings-content">
+                <section id="profile" class="set-section active">
+                    <h2>Profile Information</h2>
+                    <p class="section-desc">Update your personal information</p>
+
+                    <div class="profile-pic-section">
+                        <div class="profile-pic" id="profilePic">U</div>
+                        <div>
+                            <button class="btn" onclick="alert('Photo upload feature coming soon!')"><i class="fas fa-camera"></i> Change Photo</button>
+                            <p style="font-size:12px;color:#888;margin-top:6px">JPG, PNG max 2MB</p>
+                        </div>
+                    </div>
+
+                    <form onsubmit="saveProfile(event)">
+                        <label>Full Name</label>
+                        <input type="text" id="setName" required>
+
+                        <label>Email</label>
+                        <input type="email" id="setEmail" required>
+
+                        <label>Phone Number</label>
+                        <input type="tel" id="setPhone" required>
+
+                        <label>Address</label>
+                        <textarea id="setAddress" rows="3" placeholder="Your address"></textarea>
+
+                        <label>Role</label>
+                        <input type="text" id="setRole" disabled style="background:#f0f2f5;cursor:not-allowed">
+
+                        <button type="submit" class="btn"><i class="fas fa-save"></i> Save Changes</button>
+                    </form>
+                </section>
+
+                <section id="password" class="set-section">
+                    <h2>Change Password</h2>
+                    <p class="section-desc">Update your password regularly for security</p>
+
+                    <form onsubmit="changePassword(event)">
+                        <label>Current Password</label>
+                        <input type="password" id="currentPass" required>
+
+                        <label>New Password</label>
+                        <input type="password" id="newPass" required minlength="6">
+
+                        <label>Confirm New Password</label>
+                        <input type="password" id="confirmPass" required minlength="6">
+
+                        <div class="password-requirements">
+                            <p><i class="fas fa-info-circle"></i> Password must contain:</p>
+                            <ul>
+                                <li id="req-length">At least 6 characters</li>
+                                <li id="req-match">Passwords must match</li>
+                            </ul>
+                        </div>
+
+                        <button type="submit" class="btn"><i class="fas fa-key"></i> Update Password</button>
+                    </form>
+                </section>
+
+                <section id="notifications" class="set-section">
+                    <h2>Notification Preferences</h2>
+                    <p class="section-desc">Choose what notifications you want to receive</p>
+
+                    <div class="notif-item">
+                        <div>
+                            <h4>Email Notifications</h4>
+                            <p>Receive updates via email</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="emailNotif" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notif-item">
+                        <div>
+                            <h4>SMS Notifications</h4>
+                            <p>Get service reminders via SMS</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="smsNotif" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notif-item">
+                        <div>
+                            <h4>Service Reminders</h4>
+                            <p>Annual service due reminders</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="serviceNotif" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notif-item">
+                        <div>
+                            <h4>Marketing Emails</h4>
+                            <p>Promotional offers and updates</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="marketingNotif">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <button onclick="saveNotifications()" class="btn"><i class="fas fa-save"></i> Save Preferences</button>
+                </section>
+
+                <section id="danger" class="set-section">
+                    <h2 style="color:#e74c3c">Danger Zone</h2>
+                    <p class="section-desc">Irreversible actions - proceed with caution</p>
+
+                    <div class="danger-box">
+                        <div>
+                            <h4>Delete Account</h4>
+                            <p>Permanently delete your account and all data</p>
+                        </div>
+                        <button onclick="deleteAccount()" class="btn" style="background:#e74c3c"><i class="fas fa-trash"></i> Delete Account</button>
+                    </div>
+
+                    <div class="danger-box">
+                        <div>
+                            <h4>Reset All Data</h4>
+                            <p>Clear all devices, services, and bills</p>
+                        </div>
+                        <button onclick="resetData()" class="btn" style="background:#f39c12"><i class="fas fa-undo"></i> Reset Data</button>
+                    </div>
+
+                    <div class="danger-box">
+                        <div>
+                            <h4>Logout</h4>
+                            <p>Sign out of your account</p>
+                        </div>
+                        <button onclick="logout()" class="btn" style="background:#34495e"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="api.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html>

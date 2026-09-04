@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Details - AMC NP</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .info-card { background: white; padding: 24px; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .info-card h3 { color: #2c3e50; margin-bottom: 16px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+        .info-card h3 i { color: #667eea; }
+        .info-row { display: flex; padding: 10px 0; border-bottom: 1px solid #f0f2f5; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { flex: 0 0 130px; color: #888; font-size: 13px; }
+        .info-value { flex: 1; color: #2c3e50; font-weight: 500; font-size: 14px; }
+        .device-hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 28px; border-radius: 14px; margin-bottom: 24px; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+        .device-icon { font-size: 56px; opacity: 0.95; }
+        .device-hero-info h1 { font-size: 26px; margin-bottom: 6px; }
+        .device-hero-info p { opacity: 0.9; font-size: 14px; }
+        .action-row { display: flex; gap: 12px; margin-left: auto; flex-wrap: wrap; }
+        .btn-renew { background: #11998e; padding: 12px 20px; }
+        .btn-renew:hover { background: #0e8073; }
+        .timeline { position: relative; padding-left: 28px; }
+        .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #e1e5eb; }
+        .timeline-item { position: relative; padding: 12px 0; }
+        .timeline-item::before { content: ''; position: absolute; left: -24px; top: 18px; width: 12px; height: 12px; border-radius: 50%; background: #667eea; border: 3px solid white; box-shadow: 0 0 0 2px #667eea; }
+        .timeline-date { color: #888; font-size: 12px; }
+        .timeline-title { color: #2c3e50; font-weight: 600; font-size: 14px; }
+        .status-pill { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .status-pill.active { background: #d4edda; color: #155724; }
+        .status-pill.expired { background: #f8d7da; color: #721c24; }
+        .status-pill.expiring { background: #fff3cd; color: #856404; }
+        @media (max-width: 768px) { .detail-grid { grid-template-columns: 1fr; } .action-row { margin-left: 0; width: 100%; } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-tools"></i>
+            <h2>AMC<span>NP</span></h2>
+            <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li class="active"><a href="devices.html"><i class="fas fa-laptop"></i> My Devices</a></li>
+            <li><a href="booking.html"><i class="fas fa-calendar-check"></i> Service Requests</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> Service History</a></li>
+            <li><a href="bills.html"><i class="fas fa-file-invoice"></i> Bills</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li id="adminLink" style="display:none"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin Panel</a></li>
+            <li id="techLink" style="display:none"><a href="technician.html"><i class="fas fa-hard-hat"></i> Technician Panel</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <h1 style="font-size:20px;color:#2c3e50"><i class="fas fa-laptop" style="color:#667eea"></i> Device Details</h1>
+            <div class="user-info" id="profileBtn" style="margin-left:auto">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">User</div>
+                    <div class="user-role" id="userRole">Customer</div>
+                </div>
+            </div>
+        </header>
+        <div class="content">
+
+            <div id="loadingMsg" style="text-align:center;padding:50px;color:#888">
+                <i class="fas fa-spinner fa-spin" style="font-size:32px"></i>
+                <p>Loading device details...</p>
+            </div>
+
+            <div id="deviceContent" style="display:none">
+                <div class="device-hero" id="deviceHero">
+                    <div class="device-icon" id="deviceIcon">📺</div>
+                    <div class="device-hero-info">
+                        <h1 id="deviceName">Loading...</h1>
+                        <p id="deviceSubtitle">Loading...</p>
+                        <div style="margin-top:8px"><span id="deviceStatusPill" class="status-pill">ACTIVE</span></div>
+                    </div>
+                    <div class="action-row">
+                        <button onclick="openRenewModal()" class="btn btn-renew"><i class="fas fa-sync-alt"></i> Renew Service</button>
+                        <button onclick="showRenewals()" class="btn-outline" style="padding:12px 20px"><i class="fas fa-history"></i> Renewal History</button>
+                        <button onclick="location.href='devices.html'" class="btn-outline" style="padding:12px 20px"><i class="fas fa-arrow-left"></i> Back</button>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="info-card">
+                        <h3><i class="fas fa-info-circle"></i> Device Information</h3>
+                        <div class="info-row"><div class="info-label">Type</div><div class="info-value" id="infoType">-</div></div>
+                        <div class="info-row"><div class="info-label">Brand</div><div class="info-value" id="infoBrand">-</div></div>
+                        <div class="info-row"><div class="info-label">Model</div><div class="info-value" id="infoModel">-</div></div>
+                        <div class="info-row"><div class="info-label">Serial No</div><div class="info-value" id="infoSerial">-</div></div>
+                        <div class="info-row"><div class="info-label">Owner</div><div class="info-value" id="infoOwner">-</div></div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3><i class="fas fa-calendar-alt"></i> Service & Warranty</h3>
+                        <div class="info-row"><div class="info-label">Purchase Date</div><div class="info-value" id="infoPurchase">-</div></div>
+                        <div class="info-row"><div class="info-label">Warranty</div><div class="info-value" id="infoWarranty">-</div></div>
+                        <div class="info-row"><div class="info-label">Next Service</div><div class="info-value" id="infoNextService">-</div></div>
+                        <div class="info-row"><div class="info-label">Days Remaining</div><div class="info-value" id="infoDaysLeft">-</div></div>
+                        <div class="info-row"><div class="info-label">Status</div><div class="info-value" id="infoStatus">-</div></div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3><i class="fas fa-user"></i> Customer Details</h3>
+                        <div class="info-row"><div class="info-label">Name</div><div class="info-value" id="infoCustName">-</div></div>
+                        <div class="info-row"><div class="info-label">Mobile</div><div class="info-value" id="infoMobile">-</div></div>
+                        <div class="info-row"><div class="info-label">Address</div><div class="info-value" id="infoAddress">-</div></div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3><i class="fas fa-history"></i> Service Timeline</h3>
+                        <div class="timeline" id="serviceTimeline">
+                            <p style="text-align:center;color:#999;padding:20px">No service history yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card" id="renewalSection">
+                    <h3><i class="fas fa-sync-alt" style="color:#11998e"></i> Renewals</h3>
+                    <div id="renewalsContainer">
+                        <p style="text-align:center;color:#999;padding:20px">Loading renewals...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notFound" style="display:none;text-align:center;padding:50px">
+                <i class="fas fa-exclamation-circle" style="font-size:48px;color:#e74c3c"></i>
+                <h2 style="margin-top:15px">Device Not Found</h2>
+                <p style="color:#888">This device may have been deleted or you don't have access.</p>
+                <a href="devices.html" class="btn" style="margin-top:15px;display:inline-block">Back to Devices</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="renewModal">
+        <div class="modal-box" style="max-width:500px">
+            <h3><i class="fas fa-sync-alt" style="color:#11998e"></i> Renew Service Contract</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:15px">Extend the service warranty for this device.</p>
+            <div id="renewDeviceInfo" style="background:#f0f9f7;padding:15px;border-radius:8px;margin-bottom:15px"></div>
+            <form onsubmit="submitRenewal(event)">
+                <input type="hidden" id="renewDeviceId">
+                <label>Plan Type *</label>
+                <select id="renewPlan" required onchange="updateRenewCost()">
+                    <option value="">-- Select Plan --</option>
+                    <option value="Basic AMC" data-months="6" data-cost="800">Basic AMC (6 months) - ₹800</option>
+                    <option value="Standard AMC" data-months="12" data-cost="1500">Standard AMC (1 year) - ₹1500</option>
+                    <option value="Premium AMC" data-months="24" data-cost="2800">Premium AMC (2 years) - ₹2800</option>
+                    <option value="Extended Warranty" data-months="36" data-cost="4000">Extended Warranty (3 years) - ₹4000</option>
+                    <option value="Custom">Custom Duration</option>
+                </select>
+                <div id="customDuration" style="display:none">
+                    <label>Duration (months)</label>
+                    <input type="number" id="renewMonths" min="1" max="60" value="12">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="renewAmount" min="0" value="1500">
+                </div>
+                <label>Notes (optional)</label>
+                <textarea id="renewNotes" rows="2" placeholder="Any additional notes..."></textarea>
+                <div style="display:flex;gap:10px;margin-top:20px">
+                    <button type="submit" class="btn btn-renew" style="flex:1"><i class="fas fa-sync-alt"></i> Renew Now</button>
+                    <button type="button" onclick="closeRenewModal()" class="btn-outline" style="flex:1">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const token = localStorage.getItem('amc_token');
+        if (!user || !token) location.href = 'index.html';
+
+        const params = new URLSearchParams(location.search);
+        const deviceId = parseInt(params.get('id'));
+        let currentDevice = null;
+
+        const sidebar = document.getElementById('sidebar');
+        const menuToggle = document.getElementById('menuToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+        if (menuToggle) menuToggle.addEventListener('click', () => sidebar.classList.add('active'));
+        if (closeSidebar) closeSidebar.addEventListener('click', () => sidebar.classList.remove('active'));
+
+        const deviceIcons = { TV: '📺', AC: '❄️', FRIDGE: '🧊', WASHING: '🌀', MICROWAVE: '📦', LAPTOP: '💻', HEATER: '🔥', FAN: '💨', ROUTER: '📡' };
+
+        async function loadDevice() {
+            if (!deviceId || isNaN(deviceId)) { showNotFound(); return; }
+            const res = await Devices.list();
+            if (res.error) { showNotFound(); return; }
+            currentDevice = (res.devices || []).find(d => Number(d.id) === Number(deviceId));
+            if (!currentDevice) {
+                showNotFound();
+                setTimeout(() => { location.href = 'devices.html'; }, 2500);
+                return;
+            }
+            renderDevice();
+            loadRenewals();
+            loadServiceHistory();
+            document.getElementById('loadingMsg').style.display = 'none';
+            document.getElementById('deviceContent').style.display = 'block';
+            document.title = (currentDevice.brand || '') + ' ' + (currentDevice.model || '') + ' - AMC NP';
+        }
+
+        function showNotFound() {
+            document.getElementById('loadingMsg').style.display = 'none';
+            document.getElementById('deviceContent').style.display = 'none';
+            document.getElementById('notFound').style.display = 'block';
+        }
+
+        function renderDevice() {
+            const d = currentDevice;
+            let endDate = d.next_service ? new Date(d.next_service) : null;
+            if (!endDate && d.purchase_date) {
+                const p = new Date(d.purchase_date);
+                p.setMonth(p.getMonth() + (d.warranty || 12));
+                endDate = p;
+            }
+            const days = endDate ? Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24)) : 0;
+            const status = days > 30 ? 'active' : (days > 0 ? 'expiring' : 'expired');
+            const statusLabel = days > 30 ? 'ACTIVE' : (days > 0 ? 'EXPIRING SOON' : 'EXPIRED');
+
+            document.getElementById('deviceIcon').textContent = deviceIcons[d.type] || '🔌';
+            document.getElementById('deviceName').textContent = (d.brand || '') + ' ' + (d.model || '');
+            document.getElementById('deviceSubtitle').innerHTML = `Serial: ${d.serial || 'N/A'} • Added ${d.created_at ? new Date(d.created_at).toLocaleDateString() : 'N/A'}`;
+
+            const pill = document.getElementById('deviceStatusPill');
+            pill.className = 'status-pill ' + status;
+            pill.textContent = statusLabel;
+
+            document.getElementById('infoType').textContent = d.type || '-';
+            document.getElementById('infoBrand').textContent = d.brand || '-';
+            document.getElementById('infoModel').textContent = d.model || '-';
+            document.getElementById('infoSerial').textContent = d.serial || '-';
+            document.getElementById('infoOwner').textContent = d.owner_name || user.name || 'Me';
+
+            document.getElementById('infoPurchase').textContent = d.purchase_date ? new Date(d.purchase_date).toLocaleDateString() : '-';
+            document.getElementById('infoWarranty').textContent = (d.warranty || 12) + ' months';
+            document.getElementById('infoNextService').textContent = endDate ? endDate.toLocaleDateString() : '-';
+            document.getElementById('infoDaysLeft').innerHTML = days > 0 ? `<b style="color:${status === 'expiring' ? '#f39c12' : '#11998e'}">${days} days</b>` : `<b style="color:#e74c3c">Expired</b>`;
+            document.getElementById('infoStatus').innerHTML = `<span class="status-pill ${status}">${statusLabel}</span>`;
+
+            document.getElementById('infoCustName').textContent = d.owner_name || user.name || '-';
+            document.getElementById('infoMobile').textContent = d.mobile || '-';
+            document.getElementById('infoAddress').textContent = d.address || '-';
+
+            document.getElementById('renewDeviceId').value = d.id;
+            document.getElementById('renewDeviceInfo').innerHTML = `
+                <b>${d.brand} ${d.model}</b> (${d.type})<br>
+                <small>Current end: ${endDate ? endDate.toLocaleDateString() : 'N/A'} (${days > 0 ? days + ' days left' : 'Expired'})</small>
+            `;
+        }
+
+        async function loadRenewals() {
+            const res = await Devices.renewals(deviceId);
+            const container = document.getElementById('renewalsContainer');
+            if (res.error || !res.renewals || res.renewals.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:#999;padding:20px">No renewals yet. Click "Renew Service" to add one.</p>';
+                return;
+            }
+            container.innerHTML = '<table class="data-table" style="width:100%"><thead><tr><th>Plan</th><th>Duration</th><th>Amount</th><th>New End Date</th><th>Status</th><th>Date</th></tr></thead><tbody>' +
+                res.renewals.map(r => `
+                    <tr>
+                        <td><b>${r.plan_type}</b></td>
+                        <td>${r.duration_months} months</td>
+                        <td>₹${r.amount}</td>
+                        <td>${new Date(r.new_end_date).toLocaleDateString()}</td>
+                        <td><span class="status ${r.payment_status === 'paid' ? 'completed' : 'pending'}">${r.payment_status}</span></td>
+                        <td>${new Date(r.created_at).toLocaleDateString()}</td>
+                    </tr>
+                `).join('') + '</tbody></table>';
+        }
+
+        async function loadServiceHistory() {
+            const res = await Services.list();
+            const timeline = document.getElementById('serviceTimeline');
+            if (res.error) { timeline.innerHTML = '<p style="color:#999;text-align:center">No services</p>'; return; }
+            const services = res.services.filter(s => s.device_id === deviceId).slice(0, 10);
+            if (services.length === 0) {
+                timeline.innerHTML = '<p style="text-align:center;color:#999;padding:20px">No service history yet.</p>';
+                return;
+            }
+            timeline.innerHTML = services.map(s => {
+                const statusColor = s.status === 'completed' ? '#27ae60' : (s.status === 'pending' ? '#f39c12' : '#3498db');
+                return `
+                    <div class="timeline-item" style="--dot-color:${statusColor}">
+                        <div class="timeline-date">${s.date ? new Date(s.date).toLocaleDateString() : new Date(s.created_at).toLocaleDateString()}</div>
+                        <div class="timeline-title">${s.type || 'Service'}</div>
+                        <div style="font-size:13px;color:#666">Status: <b>${s.status}</b>${s.cost ? ' • Cost: ₹' + s.cost : ''}${s.technician ? ' • Tech: ' + s.technician : ''}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openRenewModal() {
+            document.getElementById('renewPlan').value = '';
+            document.getElementById('renewMonths').value = 12;
+            document.getElementById('renewAmount').value = 1500;
+            document.getElementById('renewNotes').value = '';
+            document.getElementById('customDuration').style.display = 'none';
+            document.getElementById('renewModal').classList.add('active');
+        }
+
+        function closeRenewModal() {
+            document.getElementById('renewModal').classList.remove('active');
+        }
+
+        document.getElementById('renewModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'renewModal') closeRenewModal();
+        });
+
+        function showRenewals() {
+            document.getElementById('renewalSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function updateRenewCost() {
+            const sel = document.getElementById('renewPlan');
+            const opt = sel.options[sel.selectedIndex];
+            const customBox = document.getElementById('customDuration');
+            if (sel.value === 'Custom') {
+                customBox.style.display = 'block';
+            } else {
+                customBox.style.display = 'none';
+                if (opt.dataset.months) {
+                    document.getElementById('renewMonths').value = opt.dataset.months;
+                    document.getElementById('renewAmount').value = opt.dataset.cost;
+                }
+            }
+        }
+
+        async function submitRenewal(e) {
+            e.preventDefault();
+            if (!currentDevice) { alert('Device not loaded. Refreshing...'); location.reload(); return; }
+            const plan = document.getElementById('renewPlan');
+            const planValue = plan.value;
+            if (!planValue) { alert('Please select a plan'); return; }
+            if (!deviceId || isNaN(deviceId)) { alert('Invalid device'); return; }
+
+            let data = { plan_type: planValue };
+            if (planValue === 'Custom') {
+                data.duration_months = parseInt(document.getElementById('renewMonths').value);
+                data.amount = parseFloat(document.getElementById('renewAmount').value) || 0;
+                if (!data.duration_months || data.duration_months < 1) { alert('Invalid duration'); return; }
+            } else {
+                const opt = plan.options[plan.selectedIndex];
+                data.duration_months = parseInt(opt.dataset.months);
+                data.amount = parseFloat(opt.dataset.cost) || 0;
+            }
+            data.notes = document.getElementById('renewNotes').value;
+
+            const res = await Devices.renew(deviceId, data);
+            if (res.error || res.status === 404) {
+                if ((res.error && (res.error.includes('not found') || res.error.includes('not yours'))) || res.status === 404) {
+                    alert('This device is no longer accessible. Redirecting to devices list...');
+                    closeRenewModal();
+                    location.href = 'devices.html';
+                } else {
+                    alert(res.error || 'Failed to renew service');
+                }
+                return;
+            }
+            closeRenewModal();
+            const newDate = new Date(res.renewal.new_end_date);
+            alert('Service renewed!\n\nNew end date: ' + newDate.toLocaleDateString() + '\nNew warranty: ' + res.new_warranty + ' months\n\nBill generated (if amount > 0).');
+            await loadDevice();
+        }
+
+        loadDevice();
+    </script>
+</body>
+</html>

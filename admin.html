@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - AMC NP</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-tools"></i>
+            <h2>AMC<span>NP</span></h2>
+            <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="devices.html"><i class="fas fa-laptop"></i> My Devices</a></li>
+            <li><a href="booking.html"><i class="fas fa-calendar-check"></i> Service Requests</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> Service History</a></li>
+            <li><a href="bills.html"><i class="fas fa-file-invoice"></i> Bills</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li class="active"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin Panel</a></li>
+            <li><a href="technician.html"><i class="fas fa-hard-hat"></i> Technician Panel</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <h1 style="font-size:20px;color:#2c3e50"><i class="fas fa-shield-alt" style="color:#e74c3c"></i> Admin Panel</h1>
+            <div class="user-info" id="profileBtn" style="margin-left:auto">
+                <div class="user-avatar" id="userAvatar">A</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">Admin</div>
+                    <div class="user-role" id="userRole">ADMIN</div>
+                </div>
+            </div>
+        </header>
+        <div class="content">
+
+        <div class="admin-stats">
+            <div class="admin-card">
+                <div class="admin-icon blue"><i class="fas fa-users"></i></div>
+                <div>
+                    <div class="admin-value" id="totalUsers">0</div>
+                    <div class="admin-label">Total Users</div>
+                </div>
+            </div>
+            <div class="admin-card">
+                <div class="admin-icon green"><i class="fas fa-laptop"></i></div>
+                <div>
+                    <div class="admin-value" id="totalDevices">0</div>
+                    <div class="admin-label">All Devices</div>
+                </div>
+            </div>
+            <div class="admin-card">
+                <div class="admin-icon orange"><i class="fas fa-tasks"></i></div>
+                <div>
+                    <div class="admin-value" id="totalServices">0</div>
+                    <div class="admin-label">All Services</div>
+                </div>
+            </div>
+            <div class="admin-card">
+                <div class="admin-icon purple"><i class="fas fa-rupee-sign"></i></div>
+                <div>
+                    <div class="admin-value" id="totalRevenue">₹0</div>
+                    <div class="admin-label">Total Revenue</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="users"><i class="fas fa-users"></i> Users</button>
+            <button class="admin-tab" data-tab="devices"><i class="fas fa-laptop"></i> All Devices</button>
+            <button class="admin-tab" data-tab="services"><i class="fas fa-wrench"></i> All Services</button>
+            <button class="admin-tab" data-tab="bills"><i class="fas fa-file-invoice"></i> All Bills</button>
+        </div>
+
+        <section id="usersTab" class="admin-section active">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchUser" placeholder="Search users..." oninput="renderUsers()">
+                <select id="filterRole" onchange="renderUsers()">
+                    <option value="">All Roles</option>
+                    <option value="customer">Customers</option>
+                    <option value="technician">Technicians</option>
+                    <option value="admin">Admins</option>
+                </select>
+                <button onclick="openAddUserModal()" class="btn" style="margin-left:auto"><i class="fas fa-user-plus"></i> Add New User</button>
+            </div>
+            <div id="usersList"></div>
+        </section>
+
+        <section id="devicesTab" class="admin-section">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchDevice" placeholder="Search devices..." oninput="renderDevices()">
+            </div>
+            <div id="devicesList"></div>
+        </section>
+
+        <section id="servicesTab" class="admin-section">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchService" placeholder="Search services..." oninput="renderServices()">
+                <select id="filterServiceStatus" onchange="renderServices()">
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                </select>
+            </div>
+            <div id="servicesList"></div>
+        </section>
+
+        <section id="billsTab" class="admin-section">
+            <div id="billsList"></div>
+        </section>
+
+        <div style="margin-top:20px;padding:20px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;color:white;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+            <div>
+                <h3 style="font-size:18px;margin-bottom:6px">Switch User Account</h3>
+                <p style="opacity:0.9">Login as a different user to manage their data</p>
+            </div>
+            <button onclick="openSwitchModal()" class="btn" style="background:white;color:#667eea;font-weight:700"><i class="fas fa-user-switch"></i> Switch User</button>
+        </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addUserModal">
+        <div class="modal-box" style="max-width:450px">
+            <h3><i class="fas fa-user-plus" style="color:#667eea"></i> Add New User</h3>
+            <p style="color:#888;font-size:13px;margin-bottom:15px">Create a new customer, technician, or admin account.</p>
+            <form onsubmit="createNewUser(event)">
+                <label>Full Name *</label>
+                <input type="text" id="newUserName" required placeholder="e.g. John Doe">
+                <label>Email *</label>
+                <input type="email" id="newUserEmail" required placeholder="user@amc.com">
+                <label>Phone</label>
+                <input type="tel" id="newUserPhone" placeholder="98xxxxxxxx">
+                <label>Role *</label>
+                <select id="newUserRole" required>
+                    <option value="customer">Customer</option>
+                    <option value="technician">Technician</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <label>Password *</label>
+                <input type="password" id="newUserPassword" required placeholder="Min 6 characters" minlength="6">
+                <div style="display:flex;gap:10px;margin-top:20px">
+                    <button type="submit" class="btn" style="flex:1"><i class="fas fa-user-plus"></i> Create User</button>
+                    <button type="button" onclick="closeAddUserModal()" class="btn-outline" style="flex:1">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="switchModal">
+        <div class="modal-box" style="max-width:400px">
+            <h3><i class="fas fa-user-switch"></i> Switch User</h3>
+            <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600">Select User</label>
+            <select id="switchUserSelect" style="width:100%;padding:10px;border:1.5px solid #e1e5eb;border-radius:8px;margin-bottom:12px">
+                <option value="">-- Select User --</option>
+            </select>
+            <label style="display:block;margin-bottom:6px;font-size:13px;font-weight:600">Reason (optional)</label>
+            <input type="text" id="switchReason" placeholder="Support / Review" style="width:100%;padding:10px;border:1.5px solid #e1e5eb;border-radius:8px;margin-bottom:15px">
+            <div style="display:flex;gap:10px">
+                <button onclick="doSwitch()" class="btn" style="flex:1">Switch</button>
+                <button onclick="closeSwitchModal()" class="btn-outline">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

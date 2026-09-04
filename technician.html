@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technician Panel - AMC NP</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-tools"></i>
+            <h2>AMC<span>NP</span></h2>
+            <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="devices.html"><i class="fas fa-laptop"></i> My Devices</a></li>
+            <li><a href="booking.html"><i class="fas fa-calendar-check"></i> Service Requests</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> Service History</a></li>
+            <li><a href="bills.html"><i class="fas fa-file-invoice"></i> Bills</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin Panel</a></li>
+            <li class="active"><a href="technician.html"><i class="fas fa-hard-hat"></i> Technician Panel</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <h1 style="font-size:20px;color:#2c3e50"><i class="fas fa-hard-hat" style="color:#11998e"></i> Technician Panel</h1>
+            <div class="user-info" id="profileBtn" style="margin-left:auto">
+                <div class="user-avatar" id="userAvatar">T</div>
+                <div class="user-details">
+                    <div class="user-name" id="userName">Tech</div>
+                    <div class="user-role" id="userRole">TECHNICIAN</div>
+                </div>
+            </div>
+        </header>
+        <div class="content">
+
+        <div style="background:linear-gradient(135deg,#11998e,#38ef7d);color:white;padding:25px;border-radius:14px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+            <div>
+                <h2 style="font-size:20px;margin-bottom:6px">Welcome, <span id="techName">Technician</span>!</h2>
+                <p style="opacity:0.9">Manage your assigned service jobs</p>
+            </div>
+            <div style="display:flex;gap:20px">
+                <div style="text-align:center">
+                    <div style="font-size:28px;font-weight:700" id="assignedCount">0</div>
+                    <div style="font-size:12px;opacity:0.9">Assigned</div>
+                </div>
+                <div style="text-align:center">
+                    <div style="font-size:28px;font-weight:700" id="completedCount">0</div>
+                    <div style="font-size:12px;opacity:0.9">Completed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="myJobs"><i class="fas fa-list"></i> My Jobs</button>
+            <button class="admin-tab" data-tab="available"><i class="fas fa-bell"></i> Available Jobs</button>
+            <button class="admin-tab" data-tab="completed"><i class="fas fa-check-double"></i> Completed</button>
+        </div>
+
+        <section id="myJobsTab" class="admin-section active">
+            <div id="myJobsList"></div>
+        </section>
+
+        <section id="availableTab" class="admin-section">
+            <div id="availableList"></div>
+        </section>
+
+        <section id="completedTab" class="admin-section">
+            <div id="completedList"></div>
+        </section>
+        </div>
+    </div>
+
+    <div class="modal" id="jobModal">
+        <div class="modal-box" style="max-width:550px">
+            <h3>Update Job Status</h3>
+            <div id="jobDetails"></div>
+            <label style="display:block;margin-top:15px;font-size:13px;font-weight:600;color:#555">Service Cost (₹)</label>
+            <input type="number" id="jobCost" placeholder="Enter total cost" min="0">
+
+            <label style="display:block;margin-top:12px;font-size:13px;font-weight:600;color:#555">Notes</label>
+            <textarea id="jobNotes" rows="3" placeholder="Service notes, parts replaced..."></textarea>
+
+            <div style="margin-top:20px;display:flex;gap:10px">
+                <button onclick="markComplete()" class="btn" style="flex:1;background:#11998e"><i class="fas fa-check"></i> Mark Complete</button>
+                <button onclick="closeJobModal()" class="btn-outline" style="flex:1">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="api.js"></script>
+    <script src="technician.js"></script>
+</body>
+</html>

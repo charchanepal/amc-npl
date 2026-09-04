@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AMC NP</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-tools"></i>
+            <h2>AMC<span>NP</span></h2>
+            <button class="close-btn" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="nav-menu">
+            <li class="active"><a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="devices.html"><i class="fas fa-laptop"></i> My Devices</a></li>
+            <li><a href="booking.html"><i class="fas fa-calendar-check"></i> Service Requests</a></li>
+            <li><a href="history.html"><i class="fas fa-history"></i> Service History</a></li>
+            <li><a href="bills.html"><i class="fas fa-file-invoice"></i> Bills</a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i> Settings</a></li>
+            <li id="adminLink" style="display:none"><a href="admin.html"><i class="fas fa-shield-alt"></i> Admin Panel</a></li>
+            <li id="techLink" style="display:none"><a href="technician.html"><i class="fas fa-hard-hat"></i> Technician Panel</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <header class="topbar">
+            <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search devices, services...">
+            </div>
+            <div class="topbar-right">
+                <button class="icon-btn"><i class="fas fa-bell"></i><span class="badge">3</span></button>
+                <div class="user-info" id="profileBtn">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">User</div>
+                        <div class="user-role" id="userRole">Customer</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="page-header">
+                <div>
+                    <h1>Welcome back, <span id="welcomeName">User</span>!</h1>
+                    <p>Here's what's happening with your devices today.</p>
+                </div>
+                <button class="btn-primary" id="addDeviceBtn">
+                    <i class="fas fa-plus"></i> Add New Device
+                </button>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="fas fa-laptop"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalDevices">0</div>
+                        <div class="stat-label">Total Devices</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalServices">0</div>
+                        <div class="stat-label">Services Done</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="pendingServices">0</div>
+                        <div class="stat-label">Pending Services</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="dueServices">0</div>
+                        <div class="stat-label">Due This Month</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Recent Services</h3>
+                        <a href="#" class="see-all">See All</a>
+                    </div>
+                    <div class="card-body">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Device</th>
+                                    <th>Service Date</th>
+                                    <th>Status</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody id="serviceTable">
+                                <tr>
+                                    <td colspan="4" class="empty-state">
+                                        <i class="fas fa-inbox"></i>
+                                        <p>No services yet. Add a device to get started.</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Upcoming Reminders</h3>
+                        <a href="#" class="see-all">See All</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="reminder-list" id="reminderList">
+                            <div class="empty-state">
+                                <i class="fas fa-bell-slash"></i>
+                                <p>No upcoming reminders.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="addDeviceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Device</h3>
+                <button class="close-modal" id="closeModal"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="addDeviceForm" class="modal-body">
+                <div class="form-group">
+                    <label>Device Type</label>
+                    <select id="deviceType" required>
+                        <option value="">Select device type</option>
+                        <option value="TV">Television</option>
+                        <option value="AC">Air Conditioner</option>
+                        <option value="FRIDGE">Refrigerator</option>
+                        <option value="WASHING">Washing Machine</option>
+                        <option value="MICROWAVE">Microwave</option>
+                        <option value="LAPTOP">Laptop</option>
+                        <option value="DESKTOP">Desktop</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Brand</label>
+                    <input type="text" id="deviceBrand" placeholder="e.g. Samsung, LG" required>
+                </div>
+                <div class="form-group">
+                    <label>Model</label>
+                    <input type="text" id="deviceModel" placeholder="e.g. Galaxy S21" required>
+                </div>
+                <div class="form-group">
+                    <label>Serial Number</label>
+                    <input type="text" id="deviceSerial" placeholder="Serial number" required>
+                </div>
+                <div class="form-group">
+                    <label>Purchase Date</label>
+                    <input type="date" id="purchaseDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Warranty (months)</label>
+                    <input type="number" id="warranty" placeholder="e.g. 12" min="0" value="12" required>
+                </div>
+                <div class="form-group">
+                    <label>Mobile *</label>
+                    <input type="tel" id="deviceMobile" placeholder="98xxxxxxxx" required>
+                </div>
+                <div class="form-group">
+                    <label>Address *</label>
+                    <input type="text" id="deviceAddress" placeholder="Customer address" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Device</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="api.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
