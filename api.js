@@ -1,7 +1,7 @@
 const API_URL = (function() {
     if (typeof window.API_URL !== 'undefined' && window.API_URL) return window.API_URL;
     if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
-        return 'http://localhost:3001/api';
+        return 'https://amc-npl.onrender.com/api';
     }
     return 'https://amc-np-backend.onrender.com/api';
 })();
