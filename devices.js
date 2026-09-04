@@ -131,10 +131,14 @@ function render() {
                 <td>${endDate ? endDate.toLocaleDateString() : '-'} <span class="days-badge ${daysClass}">${daysLabel}</span></td>
                 <td class="action-cell">
                     <button onclick="viewDevice(${d.id})" class="action-btn" title="View"><i class="fas fa-eye"></i></button>
-                    <button onclick="editDevice(${d.id})" class="action-btn" title="Edit"><i class="fas fa-pen"></i></button>
-                    <button onclick="openRenewModal(${d.id})" class="action-btn" style="color:#11998e" title="Renew Service"><i class="fas fa-sync-alt"></i></button>
-                    <button onclick="viewRenewals(${d.id})" class="action-btn" style="color:#667eea" title="Renewal History"><i class="fas fa-history"></i></button>
-                    <button onclick="deleteDevice(${d.id})" class="action-btn danger" title="Delete"><i class="fas fa-trash"></i></button>
+                    ${user.role === 'admin' ? `
+                        <button onclick="editDevice(${d.id})" class="action-btn" title="Edit"><i class="fas fa-pen"></i></button>
+                        <button onclick="deleteDevice(${d.id})" class="action-btn danger" title="Delete"><i class="fas fa-trash"></i></button>
+                    ` : ''}
+                    ${user.role === 'admin' || user.role === 'customer' ? `
+                        <button onclick="openRenewModal(${d.id})" class="action-btn" style="color:#11998e" title="Renew Service"><i class="fas fa-sync-alt"></i></button>
+                        <button onclick="viewRenewals(${d.id})" class="action-btn" style="color:#667eea" title="Renewal History"><i class="fas fa-history"></i></button>
+                    ` : ''}
                 </td>
             </tr>
         `;

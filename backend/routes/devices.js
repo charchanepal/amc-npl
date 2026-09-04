@@ -46,16 +46,23 @@ router.post('/', auth, (req, res) => {
 
 // UPDATE device
 router.put('/:id', auth, (req, res) => {
+    if (req.user.role === 'technician') return res.status(403).json({ error: 'Technicians cannot edit devices' });
     const { type, brand, model, serial, address, mobile, purchase_date, warranty } = req.body;
     const purchase = new Date(purchase_date);
     const next = new Date(purchase);
     next.setMonth(next.getMonth() + (warranty || 12));
 
-    const result = db.prepare(
-        `UPDATE devices
-         SET type=?, brand=?, model=?, serial=?, address=?, mobile=?, purchase_date=?, warranty=?, next_service=?
-         WHERE id=? AND user_id=?`
-    ).run(type, brand, model, serial, address || '', mobile || '', purchase_date, warranty || 12, next.toISOString(), req.params.id, req.user.id);
+    const result = req.user.role === 'admin'
+        ? db.prepare(
+            `UPDATE devices
+             SET type=?, brand=?, model=?, serial=?, address=?, mobile=?, purchase_date=?, warranty=?, next_service=?
+             WHERE id=?`
+        ).run(type, brand, model, serial, address || '', mobile || '', purchase_date, warranty || 12, next.toISOString(), req.params.id)
+        : db.prepare(
+            `UPDATE devices
+             SET type=?, brand=?, model=?, serial=?, address=?, mobile=?, purchase_date=?, warranty=?, next_service=?
+             WHERE id=? AND user_id=?`
+        ).run(type, brand, model, serial, address || '', mobile || '', purchase_date, warranty || 12, next.toISOString(), req.params.id, req.user.id);
 
     if (result.changes === 0) {
         return res.status(404).json({ error: 'Device not found or not yours' });
@@ -65,8 +72,15 @@ router.put('/:id', auth, (req, res) => {
 
 // DELETE device
 router.delete('/:id', auth, (req, res) => {
+    if (req.user.role !== 'admin' && req.user.role !== 'customer') {
+        return res.status(403).json({ error: 'Not allowed' });
+    }
     db.prepare('DELETE FROM renewals WHERE device_id=?').run(req.params.id);
-    db.prepare('DELETE FROM devices WHERE user_id=? AND id=?').run(req.user.id, req.params.id);
+    if (req.user.role === 'admin') {
+        db.prepare('DELETE FROM devices WHERE id=?').run(req.params.id);
+    } else {
+        db.prepare('DELETE FROM devices WHERE user_id=? AND id=?').run(req.user.id, req.params.id);
+    }
     res.json({ message: 'Deleted' });
 });
 
