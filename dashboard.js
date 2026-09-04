@@ -11,7 +11,10 @@ const menuToggle = document.getElementById('menuToggle');
 const sidebar = document.getElementById('sidebar');
 const closeSidebar = document.getElementById('closeSidebar');
 
-menuToggle.addEventListener('click', () => sidebar.classList.add('active'));
+menuToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sidebar.classList.add('active');
+});
 closeSidebar.addEventListener('click', () => sidebar.classList.remove('active'));
 document.addEventListener('click', (e) => {
     if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
@@ -24,10 +27,12 @@ const addDeviceBtn = document.getElementById('addDeviceBtn');
 const closeModal = document.getElementById('closeModal');
 const cancelBtn = document.getElementById('cancelBtn');
 
-addDeviceBtn.addEventListener('click', () => modal.classList.add('active'));
-closeModal.addEventListener('click', () => modal.classList.remove('active'));
-cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
-modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+if (addDeviceBtn && modal) {
+    addDeviceBtn.addEventListener('click', () => modal.classList.add('active'));
+    if (closeModal) closeModal.addEventListener('click', () => modal.classList.remove('active'));
+    if (cancelBtn) cancelBtn.addEventListener('click', () => modal.classList.remove('active'));
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+}
 
 let allDevices = [];
 let allServices = [];
@@ -88,6 +93,89 @@ function renderReminders() {
     }).join('');
 }
 
+function buildNotifications() {
+    const notifs = [];
+    const now = new Date();
+    allDevices.forEach(d => {
+        if (d.next_service) {
+            const days = Math.ceil((new Date(d.next_service) - now) / (1000 * 60 * 60 * 24));
+            if (days <= 7) {
+                notifs.push({
+                    icon: 'fa-tools',
+                    color: days < 0 ? '#e74c3c' : '#f39c12',
+                    title: `${d.brand || ''} ${d.model || d.type} service`,
+                    desc: days < 0 ? `Overdue by ${Math.abs(days)} days` : `Due in ${days} days`,
+                    time: 'Today'
+                });
+            }
+        }
+    });
+    const pending = allServices.filter(s => s.status === 'pending').length;
+    if (pending > 0) {
+        notifs.push({
+            icon: 'fa-clock',
+            color: '#3498db',
+            title: `${pending} pending service${pending > 1 ? 's' : ''}`,
+            desc: 'Tap "Service Requests" to view',
+            time: 'Recent'
+        });
+    }
+    const unpaid = allServices.filter(s => s.status === 'completed' && !s.paid).length;
+    if (unpaid > 0) {
+        notifs.push({
+            icon: 'fa-file-invoice',
+            color: '#16a085',
+            title: `${unpaid} unpaid bill${unpaid > 1 ? 's' : ''}`,
+            desc: 'Check your bills section',
+            time: 'Recent'
+        });
+    }
+    return notifs;
+}
+
+function updateNotifBadge() {
+    const notifs = buildNotifications();
+    const badge = document.getElementById('notifBadge');
+    if (badge) {
+        badge.textContent = notifs.length;
+        badge.style.display = notifs.length > 0 ? 'flex' : 'none';
+    }
+}
+
+function showNotifications() {
+    const notifs = buildNotifications();
+    let modal = document.getElementById('notifModal');
+    if (modal) modal.remove();
+    modal = document.createElement('div');
+    modal.id = 'notifModal';
+    modal.className = 'modal active';
+    modal.innerHTML = `
+        <div class="modal-box" style="max-width:420px">
+            <h3 style="display:flex;align-items:center;gap:10px"><i class="fas fa-bell" style="color:#f39c12"></i> Notifications (${notifs.length})</h3>
+            ${notifs.length === 0 ? `<div style="text-align:center;padding:30px 10px;color:#999"><i class="fas fa-bell-slash" style="font-size:48px;margin-bottom:10px;display:block"></i>No new notifications</div>` :
+            `<div style="max-height:400px;overflow-y:auto">
+                ${notifs.map(n => `
+                    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-bottom:1px solid #f0f0f0">
+                        <div style="width:40px;height:40px;border-radius:50%;background:${n.color}22;color:${n.color};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            <i class="fas ${n.icon}"></i>
+                        </div>
+                        <div style="flex:1">
+                            <div style="font-weight:600;font-size:14px;color:#333">${n.title}</div>
+                            <div style="font-size:12px;color:#777;margin-top:2px">${n.desc}</div>
+                            <div style="font-size:11px;color:#aaa;margin-top:3px">${n.time}</div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`}
+            <div style="margin-top:15px;text-align:right">
+                <button class="btn-outline" onclick="document.getElementById('notifModal').remove()">Close</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+}
+
 async function loadData() {
     const [devRes, srvRes] = await Promise.all([Devices.list(), Services.list()]);
     if (!devRes.error) allDevices = devRes.devices;
@@ -95,9 +183,15 @@ async function loadData() {
     updateStats();
     renderServiceTable();
     renderReminders();
+    updateNotifBadge();
 }
 
-document.getElementById('addDeviceForm').addEventListener('submit', async (e) => {
+document.getElementById('notifBtn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    showNotifications();
+});
+
+document.getElementById('addDeviceForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const data = {
         type: document.getElementById('deviceType').value,

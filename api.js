@@ -1,6 +1,10 @@
 const API_URL = (function() {
     if (typeof window.API_URL !== 'undefined' && window.API_URL) return window.API_URL;
-    if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    const host = location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+        return 'http://localhost:3001/api';
+    }
+    if (host.includes('vercel.app') || host.includes('netlify.app') || host.includes('onrender.com')) {
         return 'https://amc-npl.onrender.com/api';
     }
     return 'https://amc-npl.onrender.com/api';
@@ -120,6 +124,8 @@ function showBackToAdminBtn() {
 function initProfileDropdown() {
     const profileBtn = document.getElementById('profileBtn');
     if (!profileBtn) return;
+    if (profileBtn.dataset.profileInit === '1') return;
+    profileBtn.dataset.profileInit = '1';
 
     const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
     const adminBackup = localStorage.getItem('amc_token_backup');
@@ -159,11 +165,10 @@ function initProfileDropdown() {
     }
     menu.innerHTML = menuItems;
 
-    const newBtn = profileBtn.cloneNode(true);
-    profileBtn.parentNode.replaceChild(newBtn, profileBtn);
-    newBtn.addEventListener('click', (e) => {
+    profileBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const rect = newBtn.getBoundingClientRect();
+        e.preventDefault();
+        const rect = profileBtn.getBoundingClientRect();
         menu.style.top = (rect.bottom + 8) + 'px';
         menu.style.right = (window.innerWidth - rect.right) + 'px';
         menu.classList.toggle('active');
