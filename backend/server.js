@@ -29,6 +29,9 @@ app.use(express.json());
 
 const db = new Database('amc.db');
 
+// Add column if missing (for older DBs)
+try { db.exec("ALTER TABLE users ADD COLUMN disabled INTEGER DEFAULT 0"); } catch(e) {}
+
 // Init DB
 const initSQL = `
 CREATE TABLE IF NOT EXISTS users (
@@ -39,6 +42,7 @@ CREATE TABLE IF NOT EXISTS users (
   password TEXT,
   role TEXT DEFAULT 'customer',
   auth_provider TEXT DEFAULT 'local',
+  disabled INTEGER DEFAULT 0,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS devices (

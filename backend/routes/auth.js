@@ -47,9 +47,17 @@ router.post('/login', (req, res) => {
     const { email, password } = req.body;
     const user = db.prepare('SELECT * FROM users WHERE email=?').get(email);
 
-    if (!user || user.password !== password) {
-        return res.status(401).json({ error: 'Invalid credentials' });
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+    const bcrypt = require('bcryptjs');
+    let valid = false;
+    if (user.password && user.password.startsWith('$2')) {
+        valid = bcrypt.compareSync(password, user.password);
+    } else {
+        valid = (user.password === password);
     }
+    if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
+
     if (user.disabled) {
         return res.status(403).json({ error: 'Your account has been disabled. Contact admin.' });
     }
@@ -168,9 +176,11 @@ router.post('/users', authMiddleware, (req, res) => {
     if (existing) return res.status(400).json({ error: 'Email already registered' });
 
     const userRole = ['customer', 'technician', 'admin'].includes(role) ? role : 'customer';
+    const bcrypt = require('bcryptjs');
+    const hashed = bcrypt.hashSync(password, 10);
     const result = db.prepare(
         'INSERT INTO users (name, email, phone, password, role) VALUES (?,?,?,?,?)'
-    ).run(name, email, phone || '', password, userRole);
+    ).run(name, email, phone || '', hashed, userRole);
 
     const user = db.prepare('SELECT id,name,email,phone,role,disabled,created_at FROM users WHERE id=?').get(result.lastInsertRowid);
     res.json({ user });
